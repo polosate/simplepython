@@ -23,11 +23,11 @@ $ docker-compose run --rm pyapp /bin/bash -c "cd /opt/services/pyapp/src && pyth
 ```bash
 $ docker-compose up -d
 ```
-5. Inside the DB container  
+5. Browse to localhost:8080 to see the app in action
+
+
+### Inside the DB container  
 ```bash
 $ docker exec -t -i container_name /bin/bash
-:/# psql -h localhost -p port -d dbname -U username --password
+@ psql -h localhost -p port -d dbname -U username --password
 ```
-
-
-Browse to localhost:8080 to see the app in action
