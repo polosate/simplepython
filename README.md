@@ -28,6 +28,6 @@ $ docker-compose up -d
 
 ### Inside the DB container  
 ```bash
-$ docker exec -t -i container_name /bin/bash
-@ psql -h localhost -p port -d dbname -U username --password
+$ docker exec -t -i simplepython_db_1 /bin/bash
+@ psql -h localhost -p 5432 -d simplepython_db_1 -U postgres --password
 ```
