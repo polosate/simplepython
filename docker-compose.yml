@@ -8,12 +8,12 @@ services:
       - env_file
     networks:
       - db_nw
-  flaskapp:
+  pyapp:
     build: .
     env_file:
       - env_file
     volumes:
-      - .:/opt/services/flaskapp/src
+      - .:/opt/services/pyapp/src
     networks:
       - db_nw
       - web_nw
@@ -28,7 +28,7 @@ services:
     networks:
       - web_nw
     depends_on:
-      - flaskapp
+      - pyapp
 networks:
   db_nw:
     driver: bridge
