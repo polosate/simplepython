@@ -1,7 +1,5 @@
 import datetime
-
 from app import app
-
 from models import SignUps
 from database import db_session
 
@@ -16,5 +14,4 @@ def hello():
 
 @app.route("/user/get/")
 def goodbye():
-    # user = db_session.query_property()
     return "User: "
