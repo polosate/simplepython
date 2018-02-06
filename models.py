@@ -31,4 +31,4 @@ class Task(Base):
         self.desc = desc
 
     def __repr__(self):
-        return '<id %d, name %r, desc %r, done %b>' % (self.id, self.name, self.desc, self.done)
+        return '<id {}, name {}, desc {}, done {}>'.format(self.id, self.name, self.desc, self.done)
