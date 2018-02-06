@@ -1,11 +1,20 @@
+import datetime
+
 from app import app
+
+from models import SignUps
+from database import db_session
 
 
 @app.route("/")
 def hello():
-    return "Hello Flask!"
+    signup = SignUps(name="John Doe", email="jd@example.com", date_signed_up=datetime.datetime.now())
+    db_session.add(signup)
+    db_session.commit()
+    return "Success!"
 
 
-@app.route("/<user_path>/")
-def goodbye(user_path):
-    return "The path is  %s" % user_path
+@app.route("/user/get/")
+def goodbye():
+    # user = db_session.query_property()
+    return "User: "
