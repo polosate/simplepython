@@ -7,8 +7,10 @@ from app.middleware import task
 
 
 @app.errorhandler(404)
-def not_found(task_id):
-    return make_response(jsonify({'error': 'Task {} not found'.format(task_id)}), 404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not Found',
+                                  'message': error}),
+                         404)
 
 
 @app.errorhandler(400)
@@ -16,17 +18,19 @@ def json_parse_error():
     return make_response(jsonify({'error': 'Request is not valid'}), 400)
 
 
-@app.route("/v1/tasks/")
-def get_tasks():
-    tasks = task.get_task()
+@app.route("/v1/tasks/<int:user_id>/")
+def get_tasks(user_id):
+    tasks = task.get_tasks(user_id)
+    if not tasks:
+        return not_found("Tasks for user_id {} not found".format(user_id))
     return jsonify([t.to_dict() for t in tasks])
 
 
-@app.route("/v1/task/<int:task_id>", methods=["GET"])
+@app.route("/v1/task/<int:task_id>/", methods=["GET"])
 def get_task(task_id):
-    t = task.get_task(task_id=task_id)
-    if task is None:
-        return not_found(task_id)
+    t = task.get_task(task_id)
+    if not task:
+        return not_found("Task {} not found".format(task_id))
     return jsonify(t.to_dict())
 
 
@@ -36,11 +40,14 @@ def create_task():
         r = loads(request.data)
         name = r["name"]
         desc = r["description"]
+        user_id = r["user_id"]
     except (JSONDecodeError, KeyError):
         return json_parse_error()
 
-    task_id = task.create_task(name, desc)
-    return redirect(url_for('get_task', task_id=task_id))
+    response = task.create_task(name, desc, user_id)
+    if isinstance(response, str):
+        return not_found(response)
+    return redirect(url_for('get_task', task_id=response))
 
 # @app.route("/v1/task/<int:task_id>", methods=["PUT"])
 # def update_task(task_id):
