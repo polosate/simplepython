@@ -1,20 +1,9 @@
-from database import Base, db_session
 from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy.types import DateTime
+
+from database import Base, db_session
 
 
-class SignUps(Base):
-    """
-    Example SignUps table
-    """
-    __tablename__ = 'signups'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(256))
-    email = Column(String(256), unique=True)
-    date_signed_up = Column(DateTime())
-
-
-class Task(Base):
+class TTask(Base):
     """
     Task table
     """
