@@ -1,53 +1,47 @@
 from json import loads, JSONDecodeError
+from jsonschema import validate, ValidationError
 
 from flask import redirect, url_for, jsonify, request, make_response
 
 from app import app
 from app.middleware import task
-
-
-@app.errorhandler(404)
-def not_found(error):
-    return make_response(jsonify({'error': 'Not Found',
-                                  'message': error}),
-                         404)
-
-
-@app.errorhandler(400)
-def json_parse_error():
-    return make_response(jsonify({'error': 'Request is not valid'}), 400)
+from app.errors.errors import UserNotFound, TaskNotFound, TasksNotFound
+from app.schemas.task import task_schema
 
 
 @app.route("/v1/tasks/<int:user_id>/")
 def get_tasks(user_id):
-    tasks = task.get_tasks(user_id)
-    if not tasks:
-        return not_found("Tasks for user_id {} not found".format(user_id))
+    try:
+        tasks = task.get_tasks(user_id)
+    except TasksNotFound as e:
+        return not_found(e.msg)
     return jsonify([t.to_dict() for t in tasks])
 
 
 @app.route("/v1/task/<int:task_id>/", methods=["GET"])
 def get_task(task_id):
-    t = task.get_task(task_id)
-    if not task:
-        return not_found("Task {} not found".format(task_id))
+    try:
+        t = task.get_task(task_id)
+    except TaskNotFound as e:
+        return not_found(e.msg)
     return jsonify(t.to_dict())
 
 
 @app.route("/v1/task/", methods=["POST"])
 def create_task():
     try:
-        r = loads(request.data)
-        name = r["name"]
-        desc = r["description"]
-        user_id = r["user_id"]
-    except (JSONDecodeError, KeyError):
-        return json_parse_error()
+        data = loads(request.data)
+        validate(data, task_schema)
+    except JSONDecodeError as e:
+        return json_parse_error(e.msg)
+    except ValidationError as e:
+        return json_parse_error(e.msg)
 
-    response = task.create_task(name, desc, user_id)
-    if isinstance(response, str):
-        return not_found(response)
-    return redirect(url_for('get_task', task_id=response))
+    try:
+        task_id = task.create_task(data)
+    except UserNotFound as e:
+        return not_found(e.msg)
+    return redirect(url_for('get_task', task_id=task_id))
 
 # @app.route("/v1/task/<int:task_id>", methods=["PUT"])
 # def update_task(task_id):
@@ -75,5 +69,16 @@ def create_task():
 #     db_session.commit()
 #     return make_response(jsonify(True), 200)
 #
-#
 
+
+@app.errorhandler(404)
+def not_found(message):
+    return make_response(jsonify({'error': 'Not Found',
+                                  'message': message}),
+                         404)
+
+
+@app.errorhandler(400)
+def json_parse_error(message):
+    return make_response(jsonify({'error': 'Request is not valid',
+                                  'message': message}), 400)

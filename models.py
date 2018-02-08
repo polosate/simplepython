@@ -17,15 +17,6 @@ class TTask(Base):
 
     query = db_session.query_property()
 
-    # def __init__(self, name, desc, user_id):
-    #     self.name = name
-    #     self.desc = desc
-    #     self.user_id = user_id
-
-    def __repr__(self):
-        return '<id {}, name {}, desc {}, done {}>'\
-            .format(self.task_id, self.name, self.desc, self.done)
-
     @classmethod
     def add_record(cls, name, desc, user_id):
         try:
@@ -35,6 +26,10 @@ class TTask(Base):
         except IntegrityError:
             return None
         return new_task.task_id
+
+    @classmethod
+    def get_records(cls, **kwargs):
+        return cls.query.filter_by(**kwargs).all()
 
 
 class TUser(Base):
@@ -50,11 +45,12 @@ class TUser(Base):
 
     query = db_session.query_property()
 
-    # def __init__(self, first_name, last_name):
-    #     self.first_name = first_name
-    #     self.last_name = last_name
-
-    def __repr__(self):
-        return '<id {}, first_name {}, last_name {}>'\
-            .format(self.task_id, self.first_name, self.last_name)
-
+    @classmethod
+    def add_record(cls, **kwargs):
+        try:
+            new_user = TUser()
+            db_session.add(new_user)
+            db_session.commit()
+        except IntegrityError:
+            return None
+        return new_user.user_id

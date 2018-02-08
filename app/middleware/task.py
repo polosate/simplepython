@@ -1,3 +1,4 @@
+from app.errors.errors import UserNotFound, TaskNotFound, TasksNotFound
 from models import TTask
 
 
@@ -13,28 +14,28 @@ class Task(object):
 
 
 def get_task(task_id):
-    task = TTask.query.filter_by(task_id=task_id).first()
+    task = TTask.get_records(task_id=task_id)
     if not task:
-        return None
-    return Task(task.task_id, task.name, task.desc, task.done)
+        raise TaskNotFound(task_id)
+    return Task(task[0].task_id, task[0].name, task[0].desc, task[0].done)
 
 
 def get_tasks(user_id):
-    tasks = TTask.query.filter_by(user_id=user_id).all()
-    if not len(tasks):
-        return None
+    tasks = TTask.get_records(user_id=user_id)
+    if not tasks:
+        raise TasksNotFound(user_id)
     result = []
     for task in tasks:
         result.append(Task(task.task_id, task.name, task.desc, task.done))
     return result
 
 
-def create_task(name, desc, user_id):
-    task_id = TTask.add_record(name, desc, user_id)
+def create_task(request):
+    task_id = TTask.add_record(request["name"], request["description"], request["user_id"])
     if not task_id:
-        return "User {} not found".format(user_id)
+        raise UserNotFound(request["user_id"])
     return task_id
 
-
-def update_task(**kwargs):
-    return
+#
+# def update_task(**kwargs):
+#     return
