@@ -20,7 +20,7 @@ class TTask(Base):
     @classmethod
     def add_record(cls, name, desc, user_id):
         try:
-            new_task = TTask(name=name, desc=desc,user_id=user_id)
+            new_task = TTask(name=name, desc=desc, user_id=user_id)
             db_session.add(new_task)
             db_session.commit()
         except IntegrityError:

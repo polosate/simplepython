@@ -24,7 +24,15 @@ $ docker-compose run --rm pyapp /bin/bash -c "cd /opt/services/pyapp/src && pyth
 $ docker-compose up -d
 ```
 5. Browse to localhost:8080 to see the app in action
-
+## Test
+1. 
+```bash
+$ docker-compose -f docker-compose.test.yml -p test up -d
+```
+2.
+```bash
+$ nosetests
+```
 
 ### Inside the DB container  
 ```bash
