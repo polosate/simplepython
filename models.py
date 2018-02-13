@@ -35,9 +35,7 @@ class TTask(Base):
             db_session.commit()
         except Exception as e:
             db_session.rollback()
-            db_session.remove()
             raise e
-        db_session.remove()
         return res
 
 

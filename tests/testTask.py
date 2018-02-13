@@ -2,7 +2,7 @@ from hamcrest import assert_that, equal_to
 from app import app as application
 from tests import fixtures
 from models import TTask, TUser
-from database import db_session, engine, init_db, Base
+from database import db_session, init_test_db, Base, test_engine
 
 
 def population_db():
@@ -24,14 +24,15 @@ def population_db():
 class TestTask:
     @staticmethod
     def setup_class():
-        init_db()
+        init_test_db()
         population_db()
         application.testing = True
 
     @staticmethod
     def teardown_class():
-        db_session.remove()
-        # Base.metadata.drop_all(bind=engine)
+        pass
+        # db_session.remove()
+        # Base.metadata.drop_all(bind=test_engine)
 
     def test_get_task(self):
         r = application.test_client().get('/v1/task/1')

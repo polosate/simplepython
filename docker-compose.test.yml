@@ -6,33 +6,12 @@ services:
       - "dbdata:/var/lib/postgresql/data"
     env_file:
       - env_test
-    networks:
-      - db_nw
-  pyapp:
-    build: .
-    env_file:
-      - env_test
-    volumes:
-      - .:/opt/services/pyapp/src
-    networks:
-      - db_nw
-      - web_nw
-    depends_on:
-      - db
-  nginx:
-    image: "nginx:1.13.5"
     ports:
-      - "8081:80"
-    volumes:
-      - ./conf.d:/etc/nginx/conf.d
+      - "54322:5432"
     networks:
-      - web_nw
-    depends_on:
-      - pyapp
+      - db_nw
 networks:
   db_nw:
-    driver: bridge
-  web_nw:
     driver: bridge
 volumes:
   dbdata:
