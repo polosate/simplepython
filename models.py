@@ -24,12 +24,21 @@ class TTask(Base):
             db_session.add(new_task)
             db_session.commit()
         except IntegrityError:
+            db_session.rollback()
             return None
         return new_task.task_id
 
     @classmethod
     def get_records(cls, **kwargs):
-        return cls.query.filter_by(**kwargs).all()
+        try:
+            res = cls.query.filter_by(**kwargs).all()
+            db_session.commit()
+        except Exception as e:
+            db_session.rollback()
+            db_session.remove()
+            raise e
+        db_session.remove()
+        return res
 
 
 class TUser(Base):
@@ -52,5 +61,6 @@ class TUser(Base):
             db_session.add(new_user)
             db_session.commit()
         except IntegrityError:
+            db_session.rollback()
             return None
         return new_user.user_id

@@ -22,8 +22,6 @@ def population_db():
 
 
 class TestTask:
-    app = application.test_client()
-
     @staticmethod
     def setup_class():
         init_db()
@@ -32,10 +30,9 @@ class TestTask:
 
     @staticmethod
     def teardown_class():
-        pass
-        # db_session.remove()
+        db_session.remove()
         # Base.metadata.drop_all(bind=engine)
 
     def test_get_task(self):
-        r = self.app.get('/v1/task/1')
-        assert_that(r.data, equal_to(b'test test test'))
+        r = application.test_client().get('/v1/task/1')
+        assert_that(r, equal_to(b'test test test'))
